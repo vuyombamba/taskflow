@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TaskFlow</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Welcome to TaskFlow</h1>
+    </header>
+    <main>
+        <section id="tasks">
+            <form id="task-form">
+                <input type="text" id="task-title" placeholder="New Task">
+                <button type="submit">Add Task</button>
+            </form>
+            <ul id="task-list">
+                {% for task in tasks %}
+                <li>{{ task.title }}</li>
+                {% endfor %}
+            </ul>
+        </section>
+    </main>
+    <script>
+        document.getElementById('task-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = document.getElementById('task-title').value;
+            const response = await fetch('/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ title })
+            });
+            if (response.ok) {
+                const newTask = await response.json();
+                const taskList = document.getElementById('task-list');
+                const li = document.createElement('li');
+                li.textContent = title;
+                taskList.appendChild(li);
+                document.getElementById('task-title').value = '';
+            }
+        });
+    </script>
+</body>
+</html>
